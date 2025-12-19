@@ -7,10 +7,8 @@ window.onload = function() {
         return;
     }
 
-    // --- シェーダーコンパイル関数 ---
     function createShader(gl, type, source) {
         const shader = gl.createShader(type);
-        // #version 300 es の前の改行を削除する処理
         gl.shaderSource(shader, source.trim());
         gl.compileShader(shader);
         if (!gl.getShaderParameter(shader, gl.COMPILE_STATUS)) {
@@ -20,7 +18,6 @@ window.onload = function() {
         return shader;
     }
 
-    // --- プログラムの作成 ---
     const vsSource = document.getElementById('vs').text;
     const fsSource = document.getElementById('fs').text;
     const vertexShader = createShader(gl, gl.VERTEX_SHADER, vsSource);
@@ -32,7 +29,6 @@ window.onload = function() {
     gl.linkProgram(program);
     gl.useProgram(program);
 
-    // --- 頂点バッファ設定 ---
     const vertices = new Float32Array([-1,-1, 1,-1, -1,1, 1,1]);
     const buffer = gl.createBuffer();
     gl.bindBuffer(gl.ARRAY_BUFFER, buffer);
@@ -45,7 +41,6 @@ window.onload = function() {
     const cameraPosLoc = gl.getUniformLocation(program, 'u_cameraPos');
     const timeLoc = gl.getUniformLocation(program, 'u_time');
 
-    // --- dat.GUI の設定 ---
     const camParams = {
         radius: 3.0,
         theta: 0.0,
@@ -57,16 +52,13 @@ window.onload = function() {
     gui.add(camParams, 'theta', 0.0, Math.PI * 2.0).name('水平回転 (θ)');
     gui.add(camParams, 'phi', -Math.PI / 2.2, Math.PI / 2.2).name('上下角度 (φ)');
 
-    // --- 描画ループ ---
     function render(time) {
-        // キャンバスリサイズ
         if (canvas.width !== window.innerWidth || canvas.height !== window.innerHeight) {
             canvas.width = window.innerWidth;
             canvas.height = window.innerHeight;
             gl.viewport(0, 0, canvas.width, canvas.height);
         }
 
-        // 極座標 -> デカルト座標(x,y,z)
         const x = camParams.radius * Math.cos(camParams.phi) * Math.sin(camParams.theta);
         const y = camParams.radius * Math.sin(camParams.phi);
         const z = camParams.radius * Math.cos(camParams.phi) * Math.cos(camParams.theta);
