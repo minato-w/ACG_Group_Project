@@ -56,7 +56,7 @@
             // 背景（一定距離まで当たらなかった場合）
             if(t > 15.0) {
                 // カメラの動きがわかるように背景にグリッドを表示
-                float grid = sin(rd.x * 15.0) * sin(rd.y * 15.0) * sin(rd.z * 15.0);
+                float grid = sin(rd.x * 50.0) * sin(rd.y * 50.0) * sin(rd.z * 50.0);
                 color = vec3(0.05, 0.05, 0.1) + smoothstep(0.9, 1.0, grid) * 0.1;
                 break;
             }
