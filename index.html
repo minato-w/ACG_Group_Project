@@ -2,11 +2,12 @@
 <html lang="ja">
 <head>
     <meta charset="UTF-8">
-    <title>ACG Group Project: 3D Black Hole Base</title>
+    <title>ACG Black Hole Project: Polar Orbit</title>
     <style>
         body { margin: 0; overflow: hidden; background-color: #000; }
         canvas { width: 100vw; height: 100vh; display: block; }
     </style>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/dat-gui/0.7.9/dat.gui.min.js"></script>
 </head>
 <body>
     <canvas id="gl-canvas"></canvas>
@@ -26,32 +27,42 @@
         out vec4 outColor;
 
         void main() {
-            // 1. 画面座標を正規化 (-1.0 to 1.0)
             vec2 uv = (gl_FragCoord.xy * 2.0 - u_resolution.xy) / u_resolution.y;
 
-            // 2. レイ（光線）の定義
-            vec3 ro = u_cameraPos;          // Ray Origin (カメラ位置)
-            vec3 rd = normalize(vec3(uv, -1.5)); // Ray Direction (方向)
+            // レイの設定
+            vec3 ro = u_cameraPos;
+            // カメラが常に中心(0,0,0)を向くように方向を計算
+            vec3 target = vec3(0.0);
+            vec3 forward = normalize(target - ro);
+            vec3 right = normalize(cross(vec3(0, 1, 0), forward));
+            vec3 up = cross(forward, right);
+            vec3 rd = normalize(forward + uv.x * right + uv.y * up);
 
-            // 3. レイマーチングの設定
-            float t = 0.0;     // 進んだ距離の累計
-            vec3 color = vec3(0.2, 0.4, 0.8); // 宇宙の背景色
+            float t = 0.0;
+            vec3 color = vec3(0.0);
 
             for(int i = 0; i < 64; i++) {
-                vec3 p = ro + rd * t; // 現在の光線の位置
-                float d = length(p) - 0.5; // 半径0.5の球体
+                vec3 p = ro + rd * t;
+                float d = length(p) - 0.5; // 核（半径0.5）
 
                 if(d < 0.001) {
-                    color = vec3(0.0); // 核に当たったら真っ黒
+                    color = vec3(0.0); // 核は真っ黒
                     break;
                 }
                 t += d;
-                if(t > 15.0) break; // 遠くへ行きすぎたら終了
-            }
 
+                // 背景（一定距離まで当たらない場合）
+                if(t > 15.0) {
+                    // カメラが動いているか確認するための簡易グリッド
+                    float grid = sin(rd.x * 20.0) * sin(rd.y * 20.0) * sin(rd.z * 20.0);
+                    color = vec3(0.05, 0.05, 0.1) + smoothstep(0.95, 1.0, grid) * 0.1;
+                    break;
+                }
+            }
             outColor = vec4(color, 1.0);
         }
     </script>
+
     <script src="./src/main.js"></script>
 </body>
 </html>
