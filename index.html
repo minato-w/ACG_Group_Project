@@ -2,67 +2,71 @@
 <html lang="ja">
 <head>
     <meta charset="UTF-8">
-    <title>ACG Black Hole Project: Polar Orbit</title>
+    <title>ACG Black Hole Project</title>
     <style>
         body { margin: 0; overflow: hidden; background-color: #000; }
         canvas { width: 100vw; height: 100vh; display: block; }
     </style>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/dat-gui/0.7.9/dat.gui.min.js"></script>
 </head>
 <body>
     <canvas id="gl-canvas"></canvas>
 
     <script id="vs" type="x-shader/x-vertex">#version 300 es
-        in vec2 position;
-        void main() {
-            gl_Position = vec4(position, 0.0, 1.0);
-        }
+    in vec2 position;
+    void main() {
+        gl_Position = vec4(position, 0.0, 1.0);
+    }
     </script>
 
     <script id="fs" type="x-shader/x-fragment">#version 300 es
-        precision highp float;
-        uniform vec2 u_resolution;
-        uniform float u_time;
-        uniform vec3 u_cameraPos;
-        out vec4 outColor;
+    precision highp float;
+    uniform vec2 u_resolution;
+    uniform float u_time;
+    uniform vec3 u_cameraPos;
+    out vec4 outColor;
 
-        void main() {
-            vec2 uv = (gl_FragCoord.xy * 2.0 - u_resolution.xy) / u_resolution.y;
+    void main() {
+        vec2 uv = (gl_FragCoord.xy * 2.0 - u_resolution.xy) / u_resolution.y;
 
-            // レイの設定
-            vec3 ro = u_cameraPos;
-            // カメラが常に中心(0,0,0)を向くように方向を計算
-            vec3 target = vec3(0.0);
-            vec3 forward = normalize(target - ro);
-            vec3 right = normalize(cross(vec3(0, 1, 0), forward));
-            vec3 up = cross(forward, right);
-            vec3 rd = normalize(forward + uv.x * right + uv.y * up);
+        // --- カメラの設定 (LookAt) ---
+        vec3 ro = u_cameraPos; // レイの開始地点（カメラ位置）
+        vec3 target = vec3(0.0); // 常に中心を見る
+        vec3 forward = normalize(target - ro);
+        vec3 right = normalize(cross(vec3(0.0, 1.0, 0.0), forward));
+        vec3 up = cross(forward, right);
+        vec3 rd = normalize(forward + uv.x * right + uv.y * up);
 
-            float t = 0.0;
-            vec3 color = vec3(0.0);
+        // --- レイマーチング ---
+        float t = 0.0;
+        vec3 color = vec3(0.0);
 
-            for(int i = 0; i < 64; i++) {
-                vec3 p = ro + rd * t;
-                float d = length(p) - 0.5; // 核（半径0.5）
+        for(int i = 0; i < 64; i++) {
+            vec3 p = ro + rd * t;
+            
+            // ブラックホールの核（半径0.5の球体）との距離
+            float d = length(p) - 0.5;
 
-                if(d < 0.001) {
-                    color = vec3(0.0); // 核は真っ黒
-                    break;
-                }
-                t += d;
-
-                // 背景（一定距離まで当たらない場合）
-                if(t > 15.0) {
-                    // カメラが動いているか確認するための簡易グリッド
-                    float grid = sin(rd.x * 20.0) * sin(rd.y * 20.0) * sin(rd.z * 20.0);
-                    color = vec3(0.05, 0.05, 0.1) + smoothstep(0.95, 1.0, grid) * 0.1;
-                    break;
-                }
+            if(d < 0.001) {
+                color = vec3(0.0); // 核に当たったら黒
+                break;
             }
-            outColor = vec4(color, 1.0);
+
+            t += d;
+
+            // 背景（一定距離まで当たらなかった場合）
+            if(t > 15.0) {
+                // カメラの動きがわかるように背景にグリッドを表示
+                float grid = sin(rd.x * 15.0) * sin(rd.y * 15.0) * sin(rd.z * 15.0);
+                color = vec3(0.05, 0.05, 0.1) + smoothstep(0.9, 1.0, grid) * 0.1;
+                break;
+            }
         }
+
+        outColor = vec4(color, 1.0);
+    }
     </script>
 
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/dat-gui/0.7.9/dat.gui.min.js"></script>
     <script src="./src/main.js"></script>
 </body>
 </html>
