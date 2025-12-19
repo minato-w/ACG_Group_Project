@@ -27,37 +27,30 @@
 
     void main() {
         vec2 uv = (gl_FragCoord.xy * 2.0 - u_resolution.xy) / u_resolution.y;
-
-        // --- カメラの設定 (LookAt) ---
-        vec3 ro = u_cameraPos; // レイの開始地点（カメラ位置）
-        vec3 target = vec3(0.0); // 常に中心を見る
+        vec3 ro = u_cameraPos; 
+        vec3 target = vec3(0.0); 
         vec3 forward = normalize(target - ro);
         vec3 right = normalize(cross(vec3(0.0, 1.0, 0.0), forward));
         vec3 up = cross(forward, right);
         vec3 rd = normalize(forward + uv.x * right + uv.y * up);
 
-        // --- レイマーチング ---
         float t = 0.0;
         vec3 color = vec3(0.0);
 
         for(int i = 0; i < 64; i++) {
             vec3 p = ro + rd * t;
-            
-            // ブラックホールの核（半径0.5の球体）との距離
+
             float d = length(p) - 0.5;
 
             if(d < 0.001) {
-                color = vec3(0.0); // 核に当たったら黒
+                color = vec3(0.0); 
                 break;
             }
 
             t += d;
 
-            // 背景（一定距離まで当たらなかった場合）
             if(t > 15.0) {
-                // カメラの動きがわかるように背景にグリッドを表示
-                float grid = sin(rd.x * 50.0) * sin(rd.y * 50.0) * sin(rd.z * 50.0);
-                color = vec3(0.05, 0.05, 0.1) + smoothstep(0.9, 1.0, grid) * 0.1;
+                color = vec3(0.02, 0.02, 0.05);
                 break;
             }
         }
