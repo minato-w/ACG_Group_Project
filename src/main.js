@@ -1,121 +1,64 @@
-/**
- * ACG Group Project: Black Hole 3D Base
- * このファイルは WebGL2 の初期化、シェーダーのコンパイル、
- * および描画ループ（アニメーション）を管理します。
- */
-
 const canvas = document.getElementById('gl-canvas');
 const gl = canvas.getContext('webgl2');
 
-if (!gl) {
-    alert('WebGL2 is not supported. Please use a modern browser.');
-}
-
-// -----------------------------------------------------------
-// 1. シェーダーのコンパイルとリンク
-// -----------------------------------------------------------
-
+// --- 1. シェーダー準備 ---
 function createShader(gl, type, source) {
     const shader = gl.createShader(type);
     gl.shaderSource(shader, source);
     gl.compileShader(shader);
-    
-    // コンパイルエラーのチェック
     if (!gl.getShaderParameter(shader, gl.COMPILE_STATUS)) {
-        console.error('Shader compile error:', gl.getShaderInfoLog(shader));
-        gl.deleteShader(shader);
+        console.error(gl.getShaderInfoLog(shader));
         return null;
     }
     return shader;
 }
 
-// HTML内の <script id="vs"> と <script id="fs"> からソースを取得
-const vsSource = document.getElementById('vs').text.trim();
-const fsSource = document.getElementById('fs').text.trim();
-
-const vertexShader = createShader(gl, gl.VERTEX_SHADER, vsSource);
-const fragmentShader = createShader(gl, gl.FRAGMENT_SHADER, fsSource);
-
 const program = gl.createProgram();
-gl.attachShader(program, vertexShader);
-gl.attachShader(program, fragmentShader);
+gl.attachShader(program, createShader(gl, gl.VERTEX_SHADER, document.getElementById('vs').text.trim()));
+gl.attachShader(program, createShader(gl, gl.FRAGMENT_SHADER, document.getElementById('fs').text.trim()));
 gl.linkProgram(program);
-
-// リンクエラーのチェック
-if (!gl.getProgramParameter(program, gl.LINK_STATUS)) {
-    console.error('Program link error:', gl.getProgramInfoLog(program));
-}
 gl.useProgram(program);
 
-// -----------------------------------------------------------
-// 2. 頂点データの設定 (画面全体を覆う板)
-// -----------------------------------------------------------
-
-// 画面を覆う2つの三角形（TRIANGLE_STRIP形式）
-const vertices = new Float32Array([
-    -1.0, -1.0, 
-     1.0, -1.0, 
-    -1.0,  1.0, 
-     1.0,  1.0
-]);
-
+// --- 2. 頂点データ (画面全体を覆う板) ---
+const vertices = new Float32Array([-1,-1, 1,-1, -1,1, 1,1]);
 const buffer = gl.createBuffer();
 gl.bindBuffer(gl.ARRAY_BUFFER, buffer);
 gl.bufferData(gl.ARRAY_BUFFER, vertices, gl.STATIC_DRAW);
-
 const posLoc = gl.getAttribLocation(program, 'position');
 gl.enableVertexAttribArray(posLoc);
 gl.vertexAttribPointer(posLoc, 2, gl.FLOAT, false, 0, 0);
 
-// -----------------------------------------------------------
-// 3. Uniform（シェーダーへの変数）の場所を取得
-// -----------------------------------------------------------
+// --- 3. UIと極座標のセットアップ ---
+const gui = new dat.GUI();
+const camParams = {
+    radius: 3.0,
+    theta: 0.0, // 水平方向の回転
+    phi: 0.2    // 上下の角度 (ラジアン)
+};
+
+gui.add(camParams, 'radius', 1.0, 10.0).name('距離 (r)');
+gui.add(camParams, 'theta', 0, Math.PI * 2).name('水平回転 (θ)');
+gui.add(camParams, 'phi', -Math.PI/2.1, Math.PI/2.1).name('垂直角度 (φ)');
 
 const resLoc = gl.getUniformLocation(program, 'u_resolution');
-const timeLoc = gl.getUniformLocation(program, 'u_time');
 const cameraPosLoc = gl.getUniformLocation(program, 'u_cameraPos');
 
-// -----------------------------------------------------------
-// 4. 描画ループ
-// -----------------------------------------------------------
-
+// --- 4. 描画ループ ---
 function render(time) {
-    // 時間を秒単位に変換
-    const seconds = time * 0.001;
+    canvas.width = window.innerWidth;
+    canvas.height = window.innerHeight;
+    gl.viewport(0, 0, canvas.width, canvas.height);
 
-    // キャンバスサイズをウィンドウに合わせる
-    if (canvas.width !== window.innerWidth || canvas.height !== window.innerHeight) {
-        canvas.width = window.innerWidth;
-        canvas.height = window.innerHeight;
-        gl.viewport(0, 0, canvas.width, canvas.height);
-    }
-
-    // 画面をクリア（濃い紺色）
-    gl.clearColor(0.01, 0.01, 0.05, 1.0);
-    gl.clear(gl.COLOR_BUFFER_BIT);
+    // 極座標からデカルト座標(x,y,z)への変換
+    const x = camParams.radius * Math.cos(camParams.phi) * Math.sin(camParams.theta);
+    const y = camParams.radius * Math.sin(camParams.phi);
+    const z = camParams.radius * Math.cos(camParams.phi) * Math.cos(camParams.theta);
 
     gl.useProgram(program);
-
-    // --- Uniformの更新 ---
-    // 解像度を送る
     gl.uniform2f(resLoc, canvas.width, canvas.height);
-    
-    // 時間を送る
-    gl.uniform1f(timeLoc, seconds);
+    gl.uniform3f(cameraPosLoc, x, y, z);
 
-    // カメラ位置を計算（半径3.0の円周上をゆっくり移動）
-    const radius = 3.0;
-    const camX = Math.sin(seconds * 0.5) * radius;
-    const camZ = Math.cos(seconds * 0.5) * radius;
-    const camY = 0.5; // 少し上から見下ろす
-    gl.uniform3f(cameraPosLoc, camX, camY, camZ);
-
-    // 描画実行
     gl.drawArrays(gl.TRIANGLE_STRIP, 0, 4);
-
-    // 次のフレームへ
     requestAnimationFrame(render);
 }
-
-// アニメーション開始
 requestAnimationFrame(render);
