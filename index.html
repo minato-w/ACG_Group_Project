@@ -2,7 +2,7 @@
 <html lang="ja">
 <head>
     <meta charset="UTF-8">
-    <title>WebGL2 Black Hole Project</title>
+    <title>ACG Group Project: 3D Black Hole Base</title>
     <style>
         body { margin: 0; overflow: hidden; background-color: #000; }
         canvas { width: 100vw; height: 100vh; display: block; }
@@ -12,32 +12,57 @@
     <canvas id="gl-canvas"></canvas>
 
     <script id="vs" type="x-shader/x-vertex">#version 300 es
-in vec2 position;
-void main() {
-    gl_Position = vec4(position, 0.0, 1.0);
-}
+        in vec2 position;
+        void main() {
+            gl_Position = vec4(position, 0.0, 1.0);
+        }
     </script>
 
     <script id="fs" type="x-shader/x-fragment">#version 300 es
-precision highp float;
-uniform vec2 u_resolution;
-uniform float u_time;
-out vec4 outColor;
+        precision highp float;
+        uniform vec2 u_resolution;
+        uniform float u_time;
+        uniform vec3 u_cameraPos;
+        out vec4 outColor;
 
-void main() {
-    vec2 uv = (gl_FragCoord.xy * 2.0 - u_resolution.xy) / min(u_resolution.x, u_resolution.y);
-    float dist = length(uv);
-    
-    // 簡易的なブラックホールの表現
-    float blackHole = smoothstep(0.3, 0.31, dist);
-    float glow = 0.05 / abs(dist - 0.4);
-    vec3 color = vec3(1.0, 0.5, 0.2) * glow;
-    
-    color *= blackHole;
-    outColor = vec4(color, 1.0);
-}
+        void main() {
+            // 1. 画面座標を正規化 (-1.0 to 1.0)
+            vec2 uv = (gl_FragCoord.xy * 2.0 - u_resolution.xy) / u_resolution.y;
+
+            // 2. レイ（光線）の定義
+            vec3 ro = u_cameraPos;          // Ray Origin (カメラ位置)
+            vec3 rd = normalize(vec3(uv, -1.5)); // Ray Direction (方向)
+
+            // 3. レイマーチングの設定
+            float t = 0.0;     // 進んだ距離の累計
+            vec3 color = vec3(0.05, 0.05, 0.1); // 宇宙の背景色
+
+            for(int i = 0; i < 64; i++) {
+                vec3 p = ro + rd * t; // 現在の光線の位置
+
+                // --- ここがグループワークの見せ所 ---
+                
+                // 【物理担当】ここで rd (光の向き) を曲げる計算を入れると重力レンズになる
+                // rd = normalize(rd + (中心へのベクトル * 重力係数));
+
+                // 【オブジェクト担当】球体（核）との距離
+                float d = length(p) - 0.5; // 半径0.5の球体
+
+                if(d < 0.001) {
+                    color = vec3(0.0); // 核に当たったら真っ黒
+                    break;
+                }
+
+                // 【エフェクト担当】ここで abs(p.y) < 0.01 判定などを入れると円盤ができる
+                // if(abs(p.y) < 0.05) { color += ... }
+
+                t += d;
+                if(t > 15.0) break; // 遠くへ行きすぎたら終了
+            }
+
+            outColor = vec4(color, 1.0);
+        }
     </script>
-
     <script src="./src/main.js"></script>
 </body>
 </html>
