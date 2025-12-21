@@ -24,7 +24,9 @@
     uniform float u_time;
     uniform vec3 u_cameraPos;
     out vec4 outColor;
-
+	float hash(vec2 st){
+    	return fract(sin(dot(st, vec2(12.9898, 78.233)))*43758.5453123);
+	}
     void main() {
         vec2 uv = (gl_FragCoord.xy * 2.0 - u_resolution.xy) / u_resolution.y;
         vec3 ro = u_cameraPos; 
@@ -50,7 +52,7 @@
             t += d;
 
             if(t > 15.0) {
-                color = vec3(0.02, 0.02, 0.05);
+				color = hash(uv)>.999?vec3(1.):2.*vec3(0.02, 0.02, 0.05);
                 break;
             }
         }
