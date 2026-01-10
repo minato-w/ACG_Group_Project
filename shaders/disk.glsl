@@ -40,11 +40,11 @@ vec3 getAccretionDisk(vec3 p, vec3 rd) {
     float speed = 2.5 / (r * r + 0.1); 
     float movingTheta = theta - u_time * speed;
 
-    vec2 uv = vec2(movingTheta * 1.5, r * 12.0);
+    vec2 uv = vec2(movingTheta * 1.5, r * 6.0);
 
     float density = fbm(uv);
     
-    density = pow(density, 3.0); 
+    density = pow(density, 2.0); 
 
     vec3 vel = normalize(vec3(-p.z, 0.0, p.x));
     float doppler = dot(vel, -rd);
