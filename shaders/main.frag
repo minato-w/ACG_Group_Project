@@ -11,12 +11,11 @@ void main() {
     vec3 up = cross(forward, right);
     vec3 rd = normalize(forward + uv.x * right + uv.y * up);
     bool rayHasHit = false; 
-    float t = 0.0;
     float dt = 0.1;
     vec3 color = vec3(0.0);
     float seed = dot(uv, vec2(20.0, 80.0));
     float jitter = fract(sin(seed) * 45000.0);
-    float t =  jitter * 0.1;
+    float t =  jitter * dt;
 
     for(int i = 0; i < 256; i++) {
         vec3 p = ro + rd * t;
