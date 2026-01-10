@@ -26,7 +26,7 @@ vec3 getAccretionDisk(vec3 p, vec3 rd) {
     float movingTheta = theta - u_time * speed;
 
 
-    float n = noise(vec2(r * 60.0, movingTheta * 0.3)); 
+    float n = noise(vec2(movingTheta * 0.8, r * 40.0));
     n = smoothstep(0.2, 0.8, n);
 
     vec3 vel = normalize(vec3(-p.z, 0.0, p.x));
