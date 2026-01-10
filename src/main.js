@@ -62,7 +62,7 @@ async function init() {
     const timeLoc = gl.getUniformLocation(program, 'u_time');
 
 
-    const Params = {
+    const params = {
         radius: 3.0,
         theta: 0.0,
         phi: 0.3,
