@@ -15,12 +15,14 @@ void main() {
     float dt = 0.1;
     vec3 color = vec3(0.0);
     float seed = dot(uv, vec2(20.0, 80.0));
-    float noise = fract(sin(seed) * 45000);
-    float t = noise * 0.1;
+    float jitter = fract(sin(seed) * 45000);
+    float t =  jitter * 0.1;
 
-    for(int i = 0; i < 128; i++) {
+    for(int i = 0; i < 256; i++) {
         vec3 p = ro + rd * t;
+
         applyGravity(rd, p, dt);
+
         float dBH = length(p) - 0.5;
         if(dBH < 0.01) {
             color = vec3(0.0);
