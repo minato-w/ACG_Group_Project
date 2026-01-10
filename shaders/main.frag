@@ -12,7 +12,7 @@ void main() {
     vec3 rd = normalize(forward + uv.x * right + uv.y * up);
     bool rayHasHit = false; 
     float t = 0.0;
-    float dt = 0.1;
+    float dt = 0.02;
     vec3 color = vec3(0.0);
 
     for(int i = 0; i < 128; i++) {
