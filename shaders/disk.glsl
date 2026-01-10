@@ -11,16 +11,18 @@ float noise(vec2 x) {
 
 float fbm(vec2 p) {
     float value = 0.0;
-    float amplitude = 0.5;
-    float frequency = 1.0;
-    
+    float amplitude = 0.5; 
+    float frequency = 1.0; 
     for (int i = 0; i < 4; i++) {
         value += amplitude * noise(p * frequency);
-        frequency *= 2.1; 
+        
+        frequency *= 2.2; 
         amplitude *= 0.5; 
-        p = vec2(p.x * 0.8 - p.y * 0.6, p.x * 0.6 + p.y * 0.8); 
+
+        const float c = cos(0.5); const float s = sin(0.5);
+        p *= mat2(c, s, -s, c);
     }
-    return value;
+    return value * 0.5 + 0.5;
 }
 vec3 applyDoppler(vec3 color, vec3 p, vec3 rd) {
     vec3 velocity = normalize(vec3(-p.z, 0.0, p.x));
@@ -29,26 +31,27 @@ vec3 applyDoppler(vec3 color, vec3 p, vec3 rd) {
     return color * factor;
 }
 
-
 vec3 getAccretionDisk(vec3 p, vec3 rd) {
     float r = length(p.xz);
-    if (r < 0.8 || r > 4.0 || abs(p.y) > 0.1) return vec3(0.0); // 少し範囲を広げました
+    if (r < 0.7 || r > 4.5 || abs(p.y) > 0.12) return vec3(0.0);
 
     float theta = atan(p.z, p.x);
-
-    float speed = 2.0 / (r + 0.5);
+    
+    float speed = 2.5 / (r * r + 0.1); 
     float movingTheta = theta - u_time * speed;
 
-    vec2 noiseUV = vec2(movingTheta * 2.0, r * 10.0);
-    float n = fbm(noiseUV);
+    vec2 uv = vec2(movingTheta * 1.5, r * 12.0);
 
-    float density = pow(n, 3.0); 
+    float density = fbm(uv);
+    
+    density = pow(density, 3.0); 
+
     vec3 vel = normalize(vec3(-p.z, 0.0, p.x));
     float doppler = dot(vel, -rd);
-    vec3 baseCol = mix(vec3(1.0, 0.1, 0.0), vec3(1.2, 1.0, 0.8), doppler * 0.5 + 0.5);
+    vec3 baseCol = mix(vec3(0.8, 0.1, 0.0), vec3(1.0, 0.9, 0.6), doppler * 0.5 + 0.5);
 
-    float alpha = smoothstep(0.1, 0.0, abs(p.y));
-    float distFade = smoothstep(4.0, 2.5, r) * smoothstep(0.8, 1.0, r);
+    float verticalFade = smoothstep(0.12, 0.0, abs(p.y));
+    float radialFade = smoothstep(0.7, 0.9, r) * smoothstep(4.5, 3.0, r);
 
-    return baseCol * density * alpha * distFade * (doppler + 1.5) * 2.0;
+    return baseCol * density * verticalFade * radialFade * (doppler + 1.5) * 3.0;
 }
