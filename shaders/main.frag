@@ -12,7 +12,7 @@ void main() {
 
     for(int i = 0; i < 64; i++) {
         vec3 p = ro + rd * t;
-        color += getAccretionDisk(p);
+        color += getAccretionDisk(p,rd);
 
         float d = length(p) - 0.5;
         if(d < 0.001) {
