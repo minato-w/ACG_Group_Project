@@ -1,13 +1,3 @@
-#version 300 es
-precision highp float;
-
-uniform vec2 u_resolution;
-uniform vec3 u_cameraPos;
-uniform float u_time;
-uniform float u_gravity;
-
-out vec4 outColor;
-
 vec3 getAccretionDisk(vec3 p, vec3 rd);
 vec3 getBackground(vec3 rd);
 void applyGravity(inout vec3 rd, vec3 p, float dt);
