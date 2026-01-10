@@ -14,6 +14,9 @@ void main() {
     float t = 0.0;
     float dt = 0.1;
     vec3 color = vec3(0.0);
+    float seed = dot(uv, vec2(20.0, 80.0));
+    float noise = fract(sin(seed) * 45000);
+    float t = noise * 0.1;
 
     for(int i = 0; i < 128; i++) {
         vec3 p = ro + rd * t;
