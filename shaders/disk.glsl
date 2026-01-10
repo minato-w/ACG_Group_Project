@@ -22,18 +22,18 @@ vec3 getAccretionDisk(vec3 p, vec3 rd) {
 
     float theta = atan(p.z, p.x);
 
-    float rotation = u_time * (1.5 / (r + 0.2));
-    float movingTheta = theta - rotation;
+    float speed = 1.5 / (r + 0.2);
+    float movingTheta = theta - u_time * speed;
 
-    float n = noise(vec2(r * 10.0, movingTheta * 2.0)); 
-    n += 0.5 * noise(vec2(r * 20.0, movingTheta * 4.0)); 
-    n *= 0.6; 
+
+    float n = noise(vec2(r * 60.0, movingTheta * 0.3)); 
+    n = smoothstep(0.2, 0.8, n);
 
     vec3 vel = normalize(vec3(-p.z, 0.0, p.x));
     float doppler = dot(vel, -rd);
-    vec3 baseCol = mix(vec3(1.0, 0.3, 0.0), vec3(1.0, 0.9, 0.5), doppler * 0.5 + 0.5);
+    vec3 baseCol = mix(vec3(1.0, 0.2, 0.0), vec3(1.0, 0.9, 0.6), doppler * 0.5 + 0.5);
 
-    float density = n * smoothstep(0.08, 0.0, abs(p.y)) * smoothstep(3.5, 2.5, r);
-
-    return baseCol * density * (doppler + 1.2);
+    float alpha = smoothstep(0.08, 0.0, abs(p.y));
+    
+    return baseCol * n * alpha * (doppler + 1.2) * 1.2;
 }
