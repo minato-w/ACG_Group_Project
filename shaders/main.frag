@@ -15,7 +15,7 @@ void main() {
     float dt = 0.1;
     vec3 color = vec3(0.0);
     float seed = dot(uv, vec2(20.0, 80.0));
-    float jitter = fract(sin(seed) * 45000);
+    float jitter = fract(sin(seed) * 45000.0);
     float t =  jitter * 0.1;
 
     for(int i = 0; i < 256; i++) {
