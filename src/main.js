@@ -27,9 +27,8 @@ async function init() {
     }
 
     const vsSource = await loadShaderSource('./shaders/main.vert');
-    const fsSource = fsParts.join('\n'); // 全てを一つの文字列に結合
+    const fsSource = fsParts.join('\n'); 
 
-    // --- 3. シェーダー作成ヘルパー ---
     function createShader(gl, type, source) {
         const shader = gl.createShader(type);
         gl.shaderSource(shader, source.trim());
@@ -50,7 +49,6 @@ async function init() {
     gl.linkProgram(program);
     gl.useProgram(program);
 
-    // --- 4. バッファ・属性設定 (現状維持) ---
     const vertices = new Float32Array([-1,-1, 1,-1, -1,1, 1,1]);
     const buffer = gl.createBuffer();
     gl.bindBuffer(gl.ARRAY_BUFFER, buffer);
@@ -63,11 +61,12 @@ async function init() {
     const cameraPosLoc = gl.getUniformLocation(program, 'u_cameraPos');
     const timeLoc = gl.getUniformLocation(program, 'u_time');
 
-    // --- 5. GUI設定 (現状維持) ---
+
     const camParams = {
         radius: 3.0,
         theta: 0.0,
-        phi: 0.3
+        phi: 0.3,
+        gravity: 0.05
     };
 
     const gui = new dat.GUI();
@@ -75,7 +74,7 @@ async function init() {
     gui.add(camParams, 'theta', 0.0, Math.PI * 2.0).name('水平回転 (θ)');
     gui.add(camParams, 'phi', -Math.PI / 2.2, Math.PI / 2.2).name('上下角度 (φ)');
 
-    // --- 6. レンダリングループ (現状維持) ---
+
     function render(time) {
         if (canvas.width !== window.innerWidth || canvas.height !== window.innerHeight) {
             canvas.width = window.innerWidth;
@@ -83,9 +82,9 @@ async function init() {
             gl.viewport(0, 0, canvas.width, canvas.height);
         }
 
-        const x = camParams.radius * Math.cos(camParams.phi) * Math.sin(camParams.theta);
-        const y = camParams.radius * Math.sin(camParams.phi);
-        const z = camParams.radius * Math.cos(camParams.phi) * Math.cos(camParams.theta);
+        const x = params.radius * Math.cos(params.phi) * Math.sin(params.theta);
+        const y = params.radius * Math.sin(params.phi);
+        const z = params.radius * Math.cos(params.phi) * Math.cos(params.theta);
 
         gl.clearColor(0, 0, 0, 1);
         gl.clear(gl.COLOR_BUFFER_BIT);
@@ -95,6 +94,8 @@ async function init() {
         gl.uniform1f(timeLoc, time * 0.001);
         gl.uniform3f(cameraPosLoc, x, y, z);
 
+        const gravLoc = gl.getUniformLocation(program, 'u_gravity');
+        gl.uniform1f(gravLoc, params.gravity);
         gl.drawArrays(gl.TRIANGLE_STRIP, 0, 4);
         requestAnimationFrame(render);
     }
