@@ -11,17 +11,13 @@ float noise(vec2 x) {
 
 vec3 getAccretionDisk(vec3 p) {
     float r = length(p.xz);
-    float theta = atan(p.z, p.x);
-    if (r > 0.8 && r < 2.8 && abs(p.y) < 0.05) {
-        
-        float n = noise(vec2(r * 4.0, theta * 3.0 - u_time * 2.0));
-        float falloff = pow(1.0 - (r - 0.8) / 2.0, 2.0);
-        
-        vec3 color = vec3(1.0, 0.4, 0.1) * n * falloff;
-        
-        float edgeAlpha = smoothstep(0.05, 0.0, abs(p.y));
-        
-        return color * edgeAlpha;
+    if (r > 0.7 && r < 2.5 && abs(p.y) < 0.04) {
+        float temp = exp(-2.0 * (r - 0.7));
+        vec3 hotColor = vec3(1.0, 0.9, 0.7);
+        vec3 coolColor = vec3(1.0, 0.3, 0.0);        
+        vec3 baseColor = mix(coolColor, hotColor, temp);
+        float alpha = smoothstep(0.04, 0.0, abs(p.y));
+        return baseColor * alpha * 0.8;
     }
     return vec3(0.0);
 }
