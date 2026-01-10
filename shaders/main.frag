@@ -13,14 +13,15 @@ void applyGravity(inout vec3 rd, vec3 p, float dt);
 
 void main() {
     vec2 uv = (gl_FragCoord.xy * 2.0 - u_resolution.xy) / u_resolution.y;
-    vec3 ro = u_cameraPos; 
-    vec3 target = vec3(0.0); 
+    vec3 ro = u_cameraPos;
+    vec3 target = vec3(0.0);
     vec3 forward = normalize(target - ro);
     vec3 right = normalize(cross(vec3(0.0, 1.0, 0.0), forward));
     vec3 up = cross(forward, right);
     vec3 rd = normalize(forward + uv.x * right + uv.y * up);
 
-    bool hitAnything = false;
+    // 名前を「isRayHit」に変更して衝突回避
+    bool isRayHit = false;
     float t = 0.0;
     float dt = 0.1;
     vec3 color = vec3(0.0);
@@ -30,10 +31,10 @@ void main() {
 
         applyGravity(rd, p, dt);
 
-        float d_sphere = length(p) - 0.5;
-        if(d_sphere < 0.01) {
-            color = vec3(0.0); 
-            hitAnything = true;
+        float dBH = length(p) - 0.5;
+        if(dBH < 0.01) {
+            color = vec3(0.0);
+            isRayHit = true;
             break;
         }
 
@@ -41,19 +42,17 @@ void main() {
             float r = length(p.xz);
             if (r > 0.8 && r < 5.0) {
                 color = getAccretionDisk(p, rd);
-                hitAnything = true;
-                break; 
+                isRayHit = true;
+                break;
             }
         }
 
         t += dt;
-
-        if(t > 25.0) {
-            break;
-        }
+        if(t > 25.0) break;
     }
 
-    if (hitAnything == false) {
+    // if (!isRayHit) と書かずに「== false」で書く（古いドライバ対策）
+    if (isRayHit == false) {
         color = getBackground(rd);
     }
 
