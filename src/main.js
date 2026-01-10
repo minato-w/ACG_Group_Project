@@ -15,11 +15,11 @@ async function init() {
     let fsParts;
     try {
         fsParts = await Promise.all([
-            loadShaderSource('./shaders/common.glsl'),   
-            loadShaderSource('./shaders/disk.glsl'),     
-            loadShaderSource('./shaders/stars.glsl'),    
-            loadShaderSource('./shaders/physics.glsl'),  
-            loadShaderSource('./shaders/main.frag')      
+            loadShaderSource('./shaders/common.glsl'),
+            loadShaderSource('./shaders/physics.glsl'),
+            loadShaderSource('./shaders/disk.glsl'),
+            loadShaderSource('./shaders/stars.glsl'),
+            loadShaderSource('./shaders/main.frag')
         ]);
     } catch (e) {
         console.error("Shader loading error:", e);
