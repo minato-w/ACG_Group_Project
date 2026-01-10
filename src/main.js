@@ -62,7 +62,7 @@ async function init() {
     const timeLoc = gl.getUniformLocation(program, 'u_time');
 
 
-    const camParams = {
+    const Params = {
         radius: 3.0,
         theta: 0.0,
         phi: 0.3,
@@ -70,9 +70,10 @@ async function init() {
     };
 
     const gui = new dat.GUI();
-    gui.add(camParams, 'radius', 1.0, 10.0).name('距離 (r)');
-    gui.add(camParams, 'theta', 0.0, Math.PI * 2.0).name('水平回転 (θ)');
-    gui.add(camParams, 'phi', -Math.PI / 2.2, Math.PI / 2.2).name('上下角度 (φ)');
+    gui.add(params, 'radius', 1.0, 10.0).name('距離 (r)');
+    gui.add(params, 'theta', 0.0, Math.PI * 2.0).name('水平回転 (θ)');
+    gui.add(params, 'phi', -Math.PI / 2.2, Math.PI / 2.2).name('上下角度 (φ)');
+    gui.add(params, 'gravity', 0.0, 0.2).name('重力強度 (M)');
 
 
     function render(time) {
