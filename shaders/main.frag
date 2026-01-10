@@ -26,5 +26,10 @@ void main() {
             break;
         }
     }
+    if (!hitAnything) {
+        color = getBackground(rd);
+    }
+
+    outColor = vec4(color, 1.0);
     outColor = vec4(color, 1.0);
 }
