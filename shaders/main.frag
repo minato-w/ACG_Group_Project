@@ -4,6 +4,7 @@ precision highp float;
 uniform vec2 u_resolution;
 uniform vec3 u_cameraPos;
 uniform float u_time;
+uniform float u_gravity;
 
 out vec4 outColor;
 
@@ -19,30 +20,25 @@ void main() {
     vec3 right = normalize(cross(vec3(0.0, 1.0, 0.0), forward));
     vec3 up = cross(forward, right);
     vec3 rd = normalize(forward + uv.x * right + uv.y * up);
-
-    // 名前を「isRayHit」に変更して衝突回避
-    bool isRayHit = false;
+    bool rayHasHit = false; 
     float t = 0.0;
     float dt = 0.1;
     vec3 color = vec3(0.0);
 
     for(int i = 0; i < 128; i++) {
         vec3 p = ro + rd * t;
-
         applyGravity(rd, p, dt);
-
         float dBH = length(p) - 0.5;
         if(dBH < 0.01) {
             color = vec3(0.0);
-            isRayHit = true;
+            rayHasHit = true;
             break;
         }
-
         if (abs(p.y) < 0.05) {
             float r = length(p.xz);
             if (r > 0.8 && r < 5.0) {
                 color = getAccretionDisk(p, rd);
-                isRayHit = true;
+                rayHasHit = true;
                 break;
             }
         }
@@ -51,8 +47,7 @@ void main() {
         if(t > 25.0) break;
     }
 
-    // if (!isRayHit) と書かずに「== false」で書く（古いドライバ対策）
-    if (isRayHit == false) {
+    if (rayHasHit == false) {
         color = getBackground(rd);
     }
 
