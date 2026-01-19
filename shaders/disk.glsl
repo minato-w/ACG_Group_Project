@@ -31,27 +31,41 @@ vec3 applyDoppler(vec3 color, vec3 p, vec3 rd) {
     return color * factor;
 }
 
-vec3 getAccretionDisk(vec3 p, vec3 rd) {
+vec4 getAccretionDiskVolumetric(vec3 p, vec3 rd) {
     float r = length(p.xz);
-    if (r < 0.7 || r > 4.5 || abs(p.y) > 0.12) return vec3(0.0);
+    
+    if (r < 0.6 || r > 5.0 || abs(p.y) > 0.2) return vec4(0.0);
 
     float theta = atan(p.z, p.x);
+
+    float speed = 3.0 / (r * r + 0.1);
+    float movingTheta = theta - u_time * speed * 0.5;
+
+    vec2 uv = vec2(movingTheta * 2.0, r * 2.0 + sin(movingTheta * 3.0) * 0.2);
     
-    float speed = 2.5 / (r * r + 0.1); 
-    float movingTheta = theta - u_time * speed;
-
-    vec2 uv = vec2(movingTheta * 1.5, r * 4.0);
-
     float density = fbm(uv);
     
-    density = pow(density, 2.0); 
+    density = smoothstep(0.2, 0.8, density);
+    density = pow(density, 2.0);
+
+    float verticalFade = smoothstep(0.2, 0.0, abs(p.y));
+    float radialFade = smoothstep(0.6, 0.8, r) * smoothstep(5.0, 3.5, r);
+    
+    float finalDensity = density * verticalFade * radialFade;
+    
+    if (finalDensity < 0.01) return vec4(0.0);
 
     vec3 vel = normalize(vec3(-p.z, 0.0, p.x));
-    float doppler = dot(vel, -rd);
-    vec3 baseCol = mix(vec3(0.8, 0.1, 0.0), vec3(1.0, 0.9, 0.6), doppler * 0.5 + 0.5);
+    float doppler = dot(vel, -rd) * 0.5 + 0.5; 
+    vec3 hotColor = vec3(1.0, 0.9, 0.5);
+    vec3 coldColor = vec3(0.8, 0.1, 0.0); 
 
-    float verticalFade = smoothstep(0.12, 0.0, abs(p.y));
-    float radialFade = smoothstep(0.7, 0.9, r) * smoothstep(4.5, 3.0, r);
+    vec3 tempColor = mix(hotColor, coldColor, smoothstep(0.6, 3.0, r));
 
-    return baseCol * density * verticalFade * radialFade * (doppler + 1.5) * 3.0;
+
+    vec3 emission = tempColor * (doppler + 0.5);
+
+    emission *= smoothstep(3.0, 0.6, r) * 5.0 + 1.0;
+
+    return vec4(emission, finalDensity * 0.5);
 }
