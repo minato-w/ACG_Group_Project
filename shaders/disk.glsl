@@ -25,7 +25,7 @@ float fbm(vec2 p) {
 
 vec4 getAccretionDiskVolumetric(vec3 p, vec3 rd) {
     float r = length(p.xz);
-    if (r < 1.0 || r > 6.0 || abs(p.y) > 0.3) return vec4(0.0);
+    if (r < 1.0 || r > 5.0 || abs(p.y) > 0.3) return vec4(0.0);
 
     float theta = atan(p.z, p.x);
     float speed = 3.5 / (r * r + 0.1);
