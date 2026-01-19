@@ -5,6 +5,10 @@ vec4 getAccretionDiskVolumetric(vec3 p, vec3 rd);
 vec3 getBackground(vec3 rd);
 void applyGravity(inout vec3 rd, vec3 p, float dt);
 
+vec4 getAccretionDiskVolumetric(vec3 p, vec3 rd);
+vec3 getBackground(vec3 rd);
+void applyGravity(inout vec3 rd, vec3 p, float dt);
+
 void main() {
     vec2 uv = (gl_FragCoord.xy * 2.0 - u_resolution.xy) / u_resolution.y;
     vec3 ro = u_cameraPos;
@@ -19,42 +23,39 @@ void main() {
     vec3 accumulatedColor = vec3(0.0);
     float accumulatedOpacity = 0.0;
     float t = 0.0;
-    
     float dt = 0.04; 
     t += jitter * dt;
-    
+
     for(int i = 0; i < 256; i++) {
         vec3 p = ro + rd * t;
         applyGravity(rd, p, dt);
 
         float dist = length(p);
-
         if(dist < 1.0) {
             accumulatedOpacity = 1.0; 
             break;
         }
 
-        vec4 gasInfo = getAccretionDiskVolumetric(p, rd);
-        vec3 emission = gasInfo.rgb;
-
-        float density = gasInfo.a * 1.5; 
+        vec4 gas = getAccretionDiskVolumetric(p, rd);
+        float density = gas.a * 1.5;
 
         if(density > 0.0) {
             float stepOpacity = density * dt;
-            accumulatedColor += emission * 0.6 * stepOpacity * (1.0 - accumulatedOpacity);
+            accumulatedColor += gas.rgb * stepOpacity * (1.0 - accumulatedOpacity);
             accumulatedOpacity += stepOpacity;
         }
 
-        if(accumulatedOpacity >= 1.0) break;
+        if(accumulatedOpacity >= 0.99) break;
         
         t += dt;
         if(t > 30.0) break;
     }
 
     vec3 bgColor = vec3(0.0); 
-    vec3 finalColor = accumulatedColor + bgColor * (1.0 - accumulatedOpacity);
+    vec3 sceneColor = accumulatedColor + bgColor * (1.0 - accumulatedOpacity);
 
-    finalColor = finalColor / (1.0 + finalColor); 
+    vec3 mapped = (sceneColor * (2.51 * sceneColor + 0.03)) / 
+                  (sceneColor * (2.43 * sceneColor + 0.59) + 0.14);
     
-    outColor = vec4(finalColor, 1.0);
+    outColor = vec4(clamp(mapped, 0.0, 1.0), 1.0);
 }
