@@ -16,26 +16,24 @@ void main() {
     vec3 accumulatedColor = vec3(0.0);
     float accumulatedOpacity = 0.0;
     float t = 0.0;
-    float dt = 0.05;
+    float dt = 0.04; 
     t += jitter * dt;
 
     for(int i = 0; i < 256; i++) {
         vec3 p = ro + rd * t;
         applyGravity(rd, p, dt);
-        if(length(p) < 0.6) {
+        if(length(p) < 1.0) {
             accumulatedOpacity = 1.0;
             break;
         }
 
         vec4 gasInfo = getAccretionDiskVolumetric(p, rd);
         vec3 emission = gasInfo.rgb;
-        float density = gasInfo.a;
+        float density = gasInfo.a * 2.0; 
 
         if(density > 0.0) {
             float stepOpacity = density * dt;
-            
             accumulatedColor += emission * stepOpacity * (1.0 - accumulatedOpacity);
-            
             accumulatedOpacity += stepOpacity;
         }
 
@@ -45,12 +43,10 @@ void main() {
         }
         
         t += dt;
-
         if(t > 30.0) break;
     }
 
-    vec3 bgColor = getBackground(rd);
-
+    vec3 bgColor = vec3(0.0); 
     vec3 finalColor = accumulatedColor + bgColor * (1.0 - accumulatedOpacity);
 
     outColor = vec4(finalColor, 1.0);
