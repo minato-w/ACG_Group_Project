@@ -49,9 +49,9 @@ vec4 getAccretionDiskVolumetric(vec3 p, vec3 rd) {
     vec3 redDeep   = vec3(0.5, 0.0, 0.0);
     vec3 color;
     if (r < 2.0) {
-        color = mix(whiteCore, orangeHot, smoothstep(1.0, 1.5, r));
+        color = mix(whiteCore, orangeHot, smoothstep(1.0, 2.0, r));
     } else {
-        color = mix(orangeHot, redDeep, smoothstep(1.5, 4.5, r));
+        color = mix(orangeHot, redDeep, smoothstep(2.0, 4.5, r));
     }
     vec3 vel = normalize(vec3(-p.z, 0.0, p.x));
     float doppler = dot(vel, -rd) * 0.5 + 0.5;
