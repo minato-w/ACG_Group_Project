@@ -65,7 +65,7 @@ async function init() {
     const params = {
         radius: 5.0,
         theta: 0.0,
-        phi: 0.3,
+        phi: 0.35,
         gravity: 0.05
     };
 
