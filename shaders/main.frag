@@ -31,9 +31,9 @@ void main() {
         applyGravity(rd, p, dt);
 
         float dist = length(p);
-        if(dist < 1.02) { // 判定を少し広げる
-            float shadowEdge = smoothstep(1.0, 1.02, dist); // 1.0〜1.02の間で滑らかに変化
-            accumulatedOpacity += (1.0 - shadowEdge) * 2.0; // 影の濃さを足す
+        if(dist < 1.02) {
+            float shadowEdge = smoothstep(1.0, 1.02, dist);
+            accumulatedOpacity += (1.0 - shadowEdge) * 2.0;
             if(accumulatedOpacity >= 1.0) {
                 accumulatedOpacity = 1.0;
                 break;
@@ -45,7 +45,7 @@ void main() {
 
         if(density > 0.0) {
             float stepOpacity = density * dt;
-            accumulatedColor += gas.rgb * stepOpacity * (1.0 - accumulatedOpacity);
+            accumulatedColor += gas.rgb * 0.35 *　stepOpacity * (1.0 - accumulatedOpacity);
             accumulatedOpacity += stepOpacity;
         }
 
