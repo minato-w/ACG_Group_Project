@@ -17,8 +17,8 @@ void main() {
     vec3 up = cross(forward, right);
     vec3 rd = normalize(forward + uv.x * right + uv.y * up);
 
-    float seed = dot(uv, vec2(12.9898, 78.233));
-    float jitter = fract(sin(seed) * 43758.5453);
+    float seed = dot(uv, vec2(13.0, 78.0));
+    float jitter = fract(sin(seed) * 43760.0);
 
     vec3 accumulatedColor = vec3(0.0);
     float accumulatedOpacity = 0.0;
@@ -54,8 +54,8 @@ void main() {
     vec3 bgColor = vec3(0.0); 
     vec3 sceneColor = accumulatedColor + bgColor * (1.0 - accumulatedOpacity);
 
-    vec3 mapped = (sceneColor * (2.51 * sceneColor + 0.03)) / 
-                  (sceneColor * (2.43 * sceneColor + 0.59) + 0.14);
+    vec3 mapped = (sceneColor * (2.5 * sceneColor + 0.03)) / 
+                  (sceneColor * (2.45 * sceneColor + 0.6) + 0.15);
     
     outColor = vec4(clamp(mapped, 0.0, 1.0), 1.0);
 }
