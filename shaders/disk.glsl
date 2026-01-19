@@ -33,14 +33,14 @@ vec3 applyDoppler(vec3 color, vec3 p, vec3 rd) {
 
 vec4 getAccretionDiskVolumetric(vec3 p, vec3 rd) {
     float r = length(p.xz);
-    if (r < 1.0 || r > 5.0 || abs(p.y) > 0.15) return vec4(0.0);
+    if (r < 1.0 || r > 5.0 || abs(p.y) > 0.25) return vec4(0.0);
 
     float theta = atan(p.z, p.x);
     float speed = 3.5 / (r * r + 0.1);
     float movingTheta = theta - u_time * speed * 0.5;
     vec2 uv = vec2(movingTheta * 2.5, r * 4.0);
     float d = fbm(uv + fbm(uv * 1.5) * 0.3);
-    float finalDensity = pow(d, 3.0) * smoothstep(0.15, 0.0, abs(p.y));
+    float finalDensity = pow(d, 3.0) * smoothstep(0.25, 0.1, abs(p.y));
 
     finalDensity *= smoothstep(1.0, 1.4, r) * smoothstep(5.0, 3.5, r);
 
@@ -55,7 +55,7 @@ vec4 getAccretionDiskVolumetric(vec3 p, vec3 rd) {
     }
     vec3 vel = normalize(vec3(-p.z, 0.0, p.x));
     float doppler = dot(vel, -rd) * 0.5 + 0.5;
-    float intensity = (3.5 / r) * (doppler + 0.3) * 4.0;
+    float intensity = (4.0 / r) * (doppler + 0.3) * 6.0;
     
     return vec4(color * intensity, finalDensity);
 }
