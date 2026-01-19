@@ -1,4 +1,4 @@
-float hash(float n) { return fract(sin(n) * 43758.5453); }
+float hash(float n) { return fract(sin(n) * 43750.0); }
 
 float noise(vec2 x) {
     vec2 p = floor(x);
