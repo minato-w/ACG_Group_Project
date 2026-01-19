@@ -45,7 +45,7 @@ void main() {
 
         if(density > 0.0) {
             float stepOpacity = density * dt;
-            accumulatedColor += gas.rgb * 0.35 *　stepOpacity * (1.0 - accumulatedOpacity);
+            accumulatedColor += gas.rgb * 0.35 * stepOpacity * (1.0 - accumulatedOpacity);
             accumulatedOpacity += stepOpacity;
         }
 
