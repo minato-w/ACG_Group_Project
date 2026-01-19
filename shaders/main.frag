@@ -5,45 +5,53 @@ void applyGravity(inout vec3 rd, vec3 p, float dt);
 void main() {
     vec2 uv = (gl_FragCoord.xy * 2.0 - u_resolution.xy) / u_resolution.y;
     vec3 ro = u_cameraPos;
-    vec3 target = vec3(0.0);
-    vec3 forward = normalize(target - ro);
+    vec3 forward = normalize(-ro);
     vec3 right = normalize(cross(vec3(0.0, 1.0, 0.0), forward));
     vec3 up = cross(forward, right);
     vec3 rd = normalize(forward + uv.x * right + uv.y * up);
-    bool rayHasHit = false; 
-    float dt = 0.1;
-    vec3 color = vec3(0.0);
-    float seed = dot(uv, vec2(20.0, 80.0));
-    float jitter = fract(sin(seed) * 45000.0);
-    float t =  jitter * dt;
+
+    float seed = dot(uv, vec2(12.9898, 78.233));
+    float jitter = fract(sin(seed) * 43758.5453);
+
+    vec3 accumulatedColor = vec3(0.0);
+    float accumulatedOpacity = 0.0;
+    float t = 0.0;
+    float dt = 0.05;
+    t += jitter * dt;
 
     for(int i = 0; i < 256; i++) {
         vec3 p = ro + rd * t;
-
         applyGravity(rd, p, dt);
-
-        float dBH = length(p) - 0.5;
-        if(dBH < 0.01) {
-            color = vec3(0.0);
-            rayHasHit = true;
+        if(length(p) < 0.6) {
+            accumulatedOpacity = 1.0;
             break;
         }
-        if (abs(p.y) < 0.05) {
-            float r = length(p.xz);
-            if (r > 0.8 && r < 5.0) {
-                color = getAccretionDisk(p, rd);
-                rayHasHit = true;
-                break;
-            }
+
+        vec4 gasInfo = getAccretionDiskVolumetric(p, rd);
+        vec3 emission = gasInfo.rgb;
+        float density = gasInfo.a;
+
+        if(density > 0.0) {
+            float stepOpacity = density * dt;
+            
+            accumulatedColor += emission * stepOpacity * (1.0 - accumulatedOpacity);
+            
+            accumulatedOpacity += stepOpacity;
         }
 
+        if(accumulatedOpacity >= 1.0) {
+            accumulatedOpacity = 1.0;
+            break;
+        }
+        
         t += dt;
-        if(t > 25.0) break;
+
+        if(t > 30.0) break;
     }
 
-    if (rayHasHit == false) {
-        color = getBackground(rd);
-    }
+    vec3 bgColor = getBackground(rd);
 
-    outColor = vec4(color, 1.0);
+    vec3 finalColor = accumulatedColor + bgColor * (1.0 - accumulatedOpacity);
+
+    outColor = vec4(finalColor, 1.0);
 }
