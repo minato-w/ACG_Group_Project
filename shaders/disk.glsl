@@ -48,7 +48,7 @@ vec4 getAccretionDiskVolumetric(vec3 p, vec3 rd) {
     vec3 orangeHot = vec3(1.0, 0.15, 0.0);
     vec3 redDeep   = vec3(0.5, 0.0, 0.0);
     vec3 color;
-    if (r < 1.3) {
+    if (r < 2.0) {
         color = mix(whiteCore, orangeHot, smoothstep(1.0, 1.5, r));
     } else {
         color = mix(orangeHot, redDeep, smoothstep(1.5, 4.5, r));
