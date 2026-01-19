@@ -40,7 +40,7 @@ vec4 getAccretionDiskVolumetric(vec3 p, vec3 rd) {
     float movingTheta = theta - u_time * speed * 0.5;
 
     vec2 uv = vec2(movingTheta * 3.0, r * 4.0);
-    float density = fbm(uv + fbm(uv * 0.5)); 
+    float density = fbm(uv + fbm(uv * 0.5));
     
     density = pow(density, 2.5);
 
@@ -57,7 +57,6 @@ vec4 getAccretionDiskVolumetric(vec3 p, vec3 rd) {
     
     vec3 tempColor = mix(coreColor, midColor, smoothstep(1.0, 2.0, r));
     tempColor = mix(tempColor, edgeColor, smoothstep(2.0, 4.5, r));
-
     float intensity = (smoothstep(4.5, 1.0, r) * 12.0) + 1.0;
     vec3 emission = tempColor * intensity * (doppler + 0.2);
 
