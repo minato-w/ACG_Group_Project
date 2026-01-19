@@ -1,6 +1,9 @@
 vec3 getAccretionDisk(vec3 p, vec3 rd);
 vec3 getBackground(vec3 rd);
 void applyGravity(inout vec3 rd, vec3 p, float dt);
+vec4 getAccretionDiskVolumetric(vec3 p, vec3 rd); 
+vec3 getBackground(vec3 rd);
+void applyGravity(inout vec3 rd, vec3 p, float dt);
 
 void main() {
     vec2 uv = (gl_FragCoord.xy * 2.0 - u_resolution.xy) / u_resolution.y;
@@ -27,14 +30,14 @@ void main() {
         float dist = length(p);
 
         if(dist < 1.0) {
-            float shadowAlpha = smoothstep(0.95, 1.0, dist);
             accumulatedOpacity = 1.0; 
             break;
         }
 
         vec4 gasInfo = getAccretionDiskVolumetric(p, rd);
         vec3 emission = gasInfo.rgb;
-        float density = gasInfo.a * 1.5
+
+        float density = gasInfo.a * 1.5; 
 
         if(density > 0.0) {
             float stepOpacity = density * dt;
@@ -50,6 +53,8 @@ void main() {
 
     vec3 bgColor = vec3(0.0); 
     vec3 finalColor = accumulatedColor + bgColor * (1.0 - accumulatedOpacity);
+
     finalColor = finalColor / (1.0 + finalColor); 
+    
     outColor = vec4(finalColor, 1.0);
 }
