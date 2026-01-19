@@ -38,7 +38,7 @@ vec4 getAccretionDiskVolumetric(vec3 p, vec3 rd) {
     float theta = atan(p.z, p.x);
     float speed = 3.5 / (r * r + 0.1);
     float movingTheta = theta - u_time * speed * 0.5;
-    vec2 uv = vec2(movingTheta * 2.5, r * 4.0);
+    vec2 uv = vec2(movingTheta * 6.0, r * 15.0 + fbm(vec2(movingTheta, r)*5.0)*0.5);
     float d = fbm(uv + fbm(uv * 1.5) * 0.3);
     float finalDensity = pow(d, 3.0) * smoothstep(0.25, 0.1, abs(p.y));
 
