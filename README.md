@@ -1,18 +1,27 @@
 # ACG_Group_Project
-Black hole simulation
+**Black hole simulation**
 
 ## Demo
 **[Demo](<https://minato-w.github.io/ACG_Group_Project/>)**
 
 ## Features
+### 1. Physical calculation of light paths around a black hole
+* **Ray Marching Engine:** Calculates light paths step-by-step.
+* **Gravitational Lensing:** Bends ray directions toward the singularity to create the iconic "double-arch" distortion.
 
+### 2. Gas disk graphics
+* **Doppler Effect:** Creates a real-time brightness shift based on rotation.
+* **Volumetric Accretion Disk:** Accumulates density and color through 3D space.
+* **FBM Noise:** Uses procedural textures for a turbulent gas look.
+* **Proportion Tuning:** Balances the event horizon shadow and disk size.
+* **ACES Tone Mapping:** Preserves deep reds while glowing white-hot.
 
 ## Controls
 **Control Panel(Top Right)**
-* r : Set distance from black hole
-* θ : Move the viewpoint horizontally around the black hole
-* φ : Move the viewpoint up and down around the black hole
-* M : Set the gravitational strength of the black hole
+* r : Set distance from black hole.
+* θ : Move the viewpoint horizontally around the black hole.
+* φ : Move the viewpoint up and down around the black hole.
+* M : Set the gravitational strength of the black hole.
 
 ## Members
 * 5125A021 Minato Takahashi
