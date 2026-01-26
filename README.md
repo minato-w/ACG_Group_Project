@@ -9,7 +9,7 @@
 * **Ray Marching Engine:** Calculates light paths step-by-step.
 * **Gravitational Lensing:** Bends ray directions toward the singularity to create the iconic "double-arch" distortion.
 
-### 2. Gas disk graphics
+### 2. Accration disk graphics
 * **Doppler Effect:** Creates a real-time brightness shift based on rotation.
 * **Volumetric Accretion Disk:** Accumulates density and color through 3D space.
 * **FBM Noise:** Uses procedural textures for a turbulent gas look.
