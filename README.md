@@ -23,6 +23,15 @@
 * φ : Move the viewpoint up and down around the black hole.
 * M : Set the gravitational strength of the black hole.
 
+## Credits
+
+This project incorporates the **Star Nest** shader by **Pablo Roman Andrioli** for its background rendering.
+
+- **Original Work**: [Star Nest on Shadertoy](https://www.shadertoy.com/view/XlfGRj)
+- **Author**: Pablo Roman Andrioli
+- **License**: MIT
+
+The original code has been adapted to function as a directional background map compatible with the gravitational lensing simulation.
 ## Members
 * 5125A021 Minato Takahashi
 * 1W223010 Ko Ishii

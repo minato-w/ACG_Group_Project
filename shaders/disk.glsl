@@ -27,15 +27,15 @@ vec4 getAccretionDiskVolumetric(vec3 p, vec3 rd) {
     float r = length(p.xz);
     if (r < 1.0 || r > 5.0 || abs(p.y) > 0.3) return vec4(0.0);
 
-    float theta = atan(p.z, p.x);
+    float theta = atan(p.z, p.x)/2.;
     float speed = 3.5 / (r * r + 0.1);
-    float movingTheta = theta - u_time * speed * 0.5;
+    float movingTheta = theta - u_time * speed * 0.4;
     
     vec2 uv = vec2(movingTheta * 5.0, r * 12.0 + fbm(vec2(movingTheta, r) * 4.0) * 0.5);
     float d = fbm(uv + fbm(uv * 1.5) * 0.4);
     
     float finalDensity = pow(d, 3.0) * smoothstep(0.3, 0.1, abs(p.y));
-    finalDensity *= smoothstep(1.0, 1.3, r) * smoothstep(6.0, 4.0, r);
+    finalDensity *= smoothstep(1.0, 1.3, r) * smoothstep(6.0, 4.0, r)*1.;
 
     vec3 whiteCore = vec3(1.2, 1.0, 0.7);
     vec3 orangeHot = vec3(1.1, 0.6, 0.1);
