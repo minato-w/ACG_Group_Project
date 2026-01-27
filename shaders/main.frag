@@ -56,7 +56,6 @@ void main() {
             accumulatedColor += gas.rgb * 0.35 * stepOpacity * (1.0 - accumulatedOpacity);
             accumulatedOpacity += stepOpacity;
 
-            //ガスの密度に応じて背景透過を減衰
             bgTransmittance *= exp(-density * extinction * dt);
         }
 
