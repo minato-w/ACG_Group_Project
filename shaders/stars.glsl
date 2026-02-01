@@ -71,21 +71,30 @@ vec3 getBackground(vec3 rd) {
 #define darkmatter 0.300
 #define distfading 0.730
 #define saturation 0.850
+// stars.glsl
+
+// ... (define等はそのまま) ...
+
 vec3 getBackground(vec3 rd, vec3 ro) {
-    vec3 from = ro * 0.1; 
+    vec3 from = ro; 
     
     float s = 0.1, fade = 1.;
     vec3 v = vec3(0.);
+    
     for (int r = 0; r < volsteps; r++) {
         vec3 p_star = from + s * rd * 0.5;
-        p_star = abs(vec3(tile) - mod(p_star, vec3(tile * 2.))); 
+        vec3 p_noise = p_star * 50.0; 
+
+        p_noise = abs(vec3(tile) - mod(p_noise, vec3(tile * 2.))); 
         
         float pa, a = pa = 0.;
         for (int i = 0; i < iterations; i++) { 
-            p_star = abs(p_star) / dot(p_star, p_star) - formuparam;
-            a += abs(length(p_star) - pa); 
-            pa = length(p_star);
+            // ここも p_noise を使う
+            p_noise = abs(p_noise) / dot(p_noise, p_noise) - formuparam;
+            a += abs(length(p_noise) - pa); 
+            pa = length(p_noise);
         }
+        
         
         float dm = max(0., darkmatter - a * a * .001);
         a *= a * a; 
