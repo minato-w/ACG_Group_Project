@@ -138,7 +138,7 @@ void main() {
         t += dt;
         if(t > 30.0) break;
     }
-
+    rd = normalize(rd);
     vec3 bgColor = .5 * getBackground(rd, p);
     
     vec3 sceneColor = accumulatedColor + bgColor * bgTransmittance;
