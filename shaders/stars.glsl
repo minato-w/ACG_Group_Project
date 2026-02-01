@@ -89,7 +89,6 @@ vec3 getBackground(vec3 rd, vec3 ro) {
         
         float pa, a = pa = 0.;
         for (int i = 0; i < iterations; i++) { 
-            // ここも p_noise を使う
             p_noise = abs(p_noise) / dot(p_noise, p_noise) - formuparam;
             a += abs(length(p_noise) - pa); 
             pa = length(p_noise);
