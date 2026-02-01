@@ -73,7 +73,7 @@ vec3 getBackground(vec3 rd) {
 #define saturation 0.850
 
 vec3 getBackground(vec3 rd, vec3 ro) {
-    vec3 from = ro; 
+    vec3 from = ro+ vec3(12.34, 56.78, 91.01); 
     
     float s = 0.1, fade = 1.;
     vec3 v = vec3(0.);
