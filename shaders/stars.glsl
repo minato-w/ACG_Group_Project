@@ -62,7 +62,7 @@ vec3 getBackground(vec3 rd) {
 // License: MIT
 
 #define iterations 17
-#define formuparam 0.53
+#define formuparam 0.5312
 #define volsteps 20
 #define stepsize 0.1
 #define tile   0.850
