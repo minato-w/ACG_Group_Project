@@ -77,7 +77,7 @@ vec3 getBackground(vec3 rd, vec3 ro) {
     
     float s = 0.1, fade = 1.;
     vec3 v = vec3(0.);
-    float density_scale = 2.0;
+    float density_scale = 0.02;
     
     for (int r = 0; r < volsteps; r++) {
         vec3 p_star = from + s * rd * 0.5;
