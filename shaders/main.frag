@@ -103,7 +103,7 @@ void main() {
     t += jitter * dt;
 
     for(int i = 0; i < 256; i++) {
-        p = ro + rd * t;
+        p += rd * dt;
         applyGravity(rd, p, dt);
 
         float dist = length(p);
