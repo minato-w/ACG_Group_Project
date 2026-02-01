@@ -13,7 +13,7 @@ vec3 getBackground(vec3 rd) {
 // Based on "Star Nest" by Pablo Roman Andrioli
 // https://www.shadertoy.com/view/XlfGRj
 // License: MIT
-
+/*
 #define iterations 17
 #define formuparam 0.53
 
@@ -51,6 +51,48 @@ vec3 getBackground(vec3 rd) {
         
         v += fade;
         v += vec3(s, s * s, s * s * s * s) * a * brightness * fade; 
+        fade *= distfading; 
+        s += stepsize;
+    }
+    
+    v = mix(vec3(length(v)), v, saturation);
+    return v * .01; 
+}*/
+// Based on "Star Nest" by Pablo Roman Andrioli
+// License: MIT
+
+#define iterations 17
+#define formuparam 0.53
+#define volsteps 20
+#define stepsize 0.1
+#define tile   0.850
+#define speed  0.010 
+#define brightness 0.0015
+#define darkmatter 0.300
+#define distfading 0.730
+#define saturation 0.850
+vec3 getBackground(vec3 rd, vec3 ro) {
+    vec3 from = ro * 0.1; 
+    
+    float s = 0.1, fade = 1.;
+    vec3 v = vec3(0.);
+    for (int r = 0; r < volsteps; r++) {
+        vec3 p_star = from + s * rd * 0.5;
+        p_star = abs(vec3(tile) - mod(p_star, vec3(tile * 2.))); 
+        
+        float pa, a = pa = 0.;
+        for (int i = 0; i < iterations; i++) { 
+            p_star = abs(p_star) / dot(p_star, p_star) - formuparam;
+            a += abs(length(p_star) - pa); 
+            pa = length(p_star);
+        }
+        
+        float dm = max(0., darkmatter - a * a * .001);
+        a *= a * a; 
+        if (r > 6) fade *= 1. - dm; 
+        
+        v += fade;
+        v += vec3(s, s * s, s * s * s * s) * a * brightness * fade;
         fade *= distfading; 
         s += stepsize;
     }
