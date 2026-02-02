@@ -107,7 +107,7 @@ void main() {
         applyGravity(rd, p, dt);
 
         float dist = length(p);
-        
+        dt = max(0.015, 0.04 * dist);
         if(dist < 1.02) {
             float shadowEdge = smoothstep(1.0, 1.02, dist);
             accumulatedOpacity += (1.0 - shadowEdge) * 2.0;
