@@ -103,8 +103,7 @@ void main() {
     vec3 p = ro + rd * t;
 
     for(int i = 0; i < 256; i++) {
-        p += rd * dt;
-        applyGravity(rd, p, dt);
+
 
         float dist = length(p);
         dt = max(0.015, 0.04 * dist);
@@ -135,6 +134,8 @@ void main() {
             break;
         }
 
+        p += rd * dt;
+        applyGravity(rd, p, dt); // 重力で曲げるのも移動のタイミング
         t += dt;
         if(t > 30.0) break;
     }
