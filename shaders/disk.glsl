@@ -34,13 +34,11 @@ vec4 getAccretionDiskVolumetric(vec3 p, vec3 rd) {
     if (r < 1.2 || r > 8.0 || abs(p.y) > (0.1 + r * 0.1)) return vec4(0.0);
 
     float angle = atan(p.z, p.x);
-    
-    float rotSpeed = 3.0 * u_time / (r + 0.1); 
+
+    float rotSpeed = 0.5 * u_time / (r + 0.1); 
     float currentAngle = angle + rotSpeed;
-
-    float inflowSpeed = 3.0 * u_time;
-    float flowR = r + inflowSpeed; // プラスかマイナスかで流れる向きが変わります
-
+    float inflowSpeed = 0.8 * u_time;
+    float flowR = r + inflowSpeed;
 
     vec2 uv = vec2(currentAngle * 2.0, flowR * 1.5);
     uv.x += r * 1.0; 
