@@ -57,7 +57,7 @@ void main() {
         }
 
         p += rd * dt;
-        applyGravity(rd, p, dt); // 重力で曲げるのも移動のタイミング
+        applyGravity(rd, p, dt);
         t += dt;
         if(t > 30.0) break;
     }
