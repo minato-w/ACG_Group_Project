@@ -69,7 +69,7 @@ async function init() {
         gravity: 0.05
     };
 
-    const gui = new dat.GUI({ width: 300 });
+    const gui = new dat.GUI({ width: 360 });
     gui.add(params, 'radius', 4.0, 7.0).name('Distance (r)');
     gui.add(params, 'theta', 0.0, Math.PI).name('Horizontal rotation (θ)');
     gui.add(params, 'phi', -Math.PI / 5.00, Math.PI / 5.00).name('Vertical angle (φ)');
