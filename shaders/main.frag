@@ -97,10 +97,10 @@ void main() {
     float bgTransmittance = 1.0;
     float extinction = 2.5; 
 
-    vec3 p = ro;
     float t = 0.0;
     float dt = 0.04; 
-    t += jitter * dt;
+    t = jitter * dt;
+    vec3 p = ro + rd * t;
 
     for(int i = 0; i < 256; i++) {
         p += rd * dt;
