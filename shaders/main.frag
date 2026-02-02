@@ -98,7 +98,8 @@ void main() {
     float extinction = 2.5; 
 
     float t = 0.0;
-    float dt = 0.04; 
+    float startDist = length(ro);
+    float dt = max(0.015, 0.04 * startDist);
     t = jitter * dt;
     vec3 p = ro + rd * t;
 
