@@ -70,10 +70,10 @@ async function init() {
     };
 
     const gui = new dat.GUI();
-    gui.add(params, 'radius', 4.0, 7.0).name('距離 (r)');
-    gui.add(params, 'theta', 0.0, Math.PI).name('水平回転 (θ)');
-    gui.add(params, 'phi', -Math.PI / 5.00, Math.PI / 5.00).name('上下角度 (φ)');
-    gui.add(params, 'gravity', 0.0, 0.2).name('重力強度 (M)');
+    gui.add(params, 'radius', 4.0, 7.0).name('Distance (r)');
+    gui.add(params, 'theta', 0.0, Math.PI).name('Horizontal rotation (θ)');
+    gui.add(params, 'phi', -Math.PI / 5.00, Math.PI / 5.00).name('Vertical angle (φ)');
+    gui.add(params, 'gravity', 0.0, 0.2).name('Gravitational Intensity (M)');
 
 
     function render(time) {
