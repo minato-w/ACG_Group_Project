@@ -35,14 +35,14 @@ vec4 getAccretionDiskVolumetric(vec3 p, vec3 rd) {
 
     float angle = atan(p.z, p.x);
 
-    float rotSpeed = 0.5 * u_time / (r + 0.1); 
+    float rotSpeed = 1.5 * u_time/ (r + 0.1); 
     float currentAngle = angle + rotSpeed;
-    float inflowSpeed = 0.8 * u_time;
+    float inflowSpeed = 0.2 * u_time;
     float flowR = r + inflowSpeed;
 
     vec2 uv = vec2(currentAngle * 2.0, flowR * 1.5);
-    uv.x += r * 1.0; 
-    float gas = fbm(uv * vec2(1.0, 3.0)); 
+    uv.x += 2.0 / (r + 0.05);
+    float gas = fbm(uv * vec2(0.5, 4.0)); 
     gas = smoothstep(0.2, 0.8, gas);
     float verticalFade = smoothstep(0.1 + r * 0.05, 0.0, abs(p.y));
     float radialFade = smoothstep(1.2, 2.5, r) * smoothstep(8.0, 4.0, r);
