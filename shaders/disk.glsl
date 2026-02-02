@@ -36,9 +36,9 @@ vec4 getAccretionDiskVolumetric(vec3 p, vec3 rd) {
     float angle = atan(p.z, p.x);
     float time = mod(u_time, 10.0);
 
-    float rotSpeed = 1.5 * u_time/ (r + 0.1); 
+    float rotSpeed = 1.5 * time/ (r + 0.1); 
     float currentAngle = angle + rotSpeed;
-    float inflowSpeed = 0.2 * u_time;
+    float inflowSpeed = 0.2 * time;
     float flowR = r + inflowSpeed;
 
     vec2 uv = vec2(currentAngle * 2.0, flowR * 1.5);
