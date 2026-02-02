@@ -44,8 +44,8 @@ vec4 getAccretionDiskVolumetric(vec3 p, vec3 rd) {
     vec2 uv = vec2(currentAngle * 2.0, flowR * 1.5);
     uv.x -= 2.0 / (r + 0.05);
     vec2 warp = vec2(
-        fbm(uv * 2.0 + vec2(u_time * 0.5, 0.0)),
-        fbm(uv * 2.0 + vec2(0.0, u_time * 0.5))
+        fbm(uv * 2.0 + vec2(time * 0.5, 0.0)),
+        fbm(uv * 2.0 + vec2(0.0, time * 0.5))
     );
 
     float gas = fbm(uv + warp * 0.5);
