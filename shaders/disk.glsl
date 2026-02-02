@@ -30,30 +30,35 @@ float fbm(vec2 p) {
 
 vec4 getAccretionDiskVolumetric(vec3 p, vec3 rd) {
     float r = length(p.xz);
-    
     if (r < 1.2 || r > 8.0 || abs(p.y) > (0.1 + r * 0.1)) return vec4(0.0);
 
     float angle = atan(p.z, p.x);
-    float time = mod(u_time, 10.0);
+    
+    float loopPeriod = 20.0; 
+    float t1 = mod(u_time, loopPeriod);
+    float t2 = mod(u_time + loopPeriod * 0.5, loopPeriod);
+    float rot1 = 1.5 * t1 / (r + 0.1);
+    float flow1 = r + 0.2 * t1; // inflowSpeed
+    vec2 uv1 = vec2((angle + rot1) * 2.0, flow1 * 1.5);
+    uv1.x -= 2.0 / (r + 0.05); // Twist
+    float gas1 = fbm(uv1 * vec2(0.5, 4.0));
 
-    float rotSpeed = 1.5 * time/ (r + 0.1); 
-    float currentAngle = angle + rotSpeed;
-    float inflowSpeed = 0.2 * time;
-    float flowR = r + inflowSpeed;
+    float rot2 = 1.5 * t2 / (r + 0.1);
+    float flow2 = r + 0.2 * t2;
+    vec2 uv2 = vec2((angle + rot2) * 2.0, flow2 * 1.5);
+    uv2.x -= 2.0 / (r + 0.05);
+    float gas2 = fbm(uv2 * vec2(0.5, 4.0));
 
-    vec2 uv = vec2(currentAngle * 2.0, flowR * 1.5);
-    uv.x -= 2.0 / (r + 0.05);
-    vec2 warp = vec2(
-        fbm(uv * 2.0 + vec2(time * 0.5, 0.0)),
-        fbm(uv * 2.0 + vec2(0.0, time * 0.5))
-    );
-
-    float gas = fbm(uv + warp * 0.5);
+    float blend = 0.5 - 0.5 * cos(u_time * 6.28318 / loopPeriod);
+    
+    float gas = mix(gas2, gas1, blend);
+    
     gas = smoothstep(0.2, 0.8, gas);
     float verticalFade = smoothstep(0.1 + r * 0.05, 0.0, abs(p.y));
     float radialFade = smoothstep(1.2, 2.5, r) * smoothstep(8.0, 4.0, r);
     
     float density = gas * verticalFade * radialFade;
+    
     vec3 whiteCore = vec3(1.2, 1.0, 0.7); 
     vec3 orangeHot = vec3(1.1, 0.6, 0.1);
     vec3 redDeep = vec3(0.6, 0.05, 0.0);
