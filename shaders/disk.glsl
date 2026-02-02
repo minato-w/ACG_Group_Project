@@ -29,46 +29,40 @@ float fbm(vec2 p) {
 }
 
 vec4 getAccretionDiskVolumetric(vec3 p, vec3 rd) {
-    // 境界チェック
     float r = length(p.xz);
-    if (r < 1.0 || r > 10.0 || abs(p.y) > (0.1 + r * 0.08)) return vec4(0.0);
+    
+    if (r < 1.2 || r > 8.0 || abs(p.y) > (0.1 + r * 0.1)) return vec4(0.0);
 
     float angle = atan(p.z, p.x);
-
-    float spiral = angle + 10.0 / (r + 0.5); 
-
-    float speed = 2.0 * u_time;
-
-    vec2 uv = vec2(spiral * 2.0 - speed * 0.5, r * 3.0 - speed);
     
+    float rotSpeed = 3.0 * u_time / (r + 0.1); 
+    float currentAngle = angle + rotSpeed;
 
-    float gasNoise = fbm(uv * vec2(1.0, 0.5));
+    float inflowSpeed = 3.0 * u_time;
+    float flowR = r + inflowSpeed; // プラスかマイナスかで流れる向きが変わります
+
+
+    vec2 uv = vec2(currentAngle * 2.0, flowR * 1.5);
+    uv.x += r * 1.0; 
+    float gas = fbm(uv * vec2(1.0, 3.0)); 
+    gas = smoothstep(0.2, 0.8, gas);
+    float verticalFade = smoothstep(0.1 + r * 0.05, 0.0, abs(p.y));
+    float radialFade = smoothstep(1.2, 2.5, r) * smoothstep(8.0, 4.0, r);
     
-
-    gasNoise = smoothstep(0.3, 0.8, gasNoise);
-
-
-    float verticalFade = smoothstep(0.1 + r * 0.1, 0.0, abs(p.y));
-
-    float radialFade = smoothstep(1.0, 2.5, r) * smoothstep(8.0, 4.0, r);
-    
-    float density = gasNoise * verticalFade * radialFade;
-
-    vec3 whiteCore = vec3(1.2, 1.0, 0.7);
-    vec3 orangeHot = vec3(1.1, 0.6, 0.1);
-    vec3 redDeep = vec3(0.6, 0.05, 0.0);
+    float density = gas * verticalFade * radialFade;
+    vec3 colInner = vec3(1.0, 0.9, 0.8);
+    vec3 colMid   = vec3(1.0, 0.5, 0.1);
+    vec3 colOuter = vec3(0.5, 0.05, 0.0);
     
     vec3 color;
     if (r < 3.0) {
-        color = mix(whiteCore, orangeHot, smoothstep(1.5, 3.0, r));
+        color = mix(colInner, colMid, smoothstep(1.2, 3.0, r));
     } else {
-        color = mix(orangeHot, redDeep, smoothstep(3.0, 7.0, r));
+        color = mix(colMid, colOuter, smoothstep(3.0, 7.0, r));
     }
-
     vec3 vel = normalize(vec3(-p.z, 0.0, p.x));
     float doppler = dot(vel, -rd);
     float dopplerFactor = doppler * 0.5 + 0.5;
-    float intensity = (4.0 / pow(r, 0.7)) * (0.5 + 1.5 * dopplerFactor);
-    
-    return vec4(color * intensity, density * 2.5);
+    float intensity = (8.0 / (r * r)) * (0.5 + 1.5 * dopplerFactor);
+    return vec4(color * intensity, density * 2.0);
 }
